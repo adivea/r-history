@@ -216,7 +216,7 @@ kings_plot
 Building plots with **`ggplot2`** is typically an iterative process. We start by
 defining the dataset we'll use, lay out the axes, and choose a geom:
 
-```{r create-ggplot-object, fig.alt="Scatter plot of number of items owned versus number of household members.", purl=FALSE}
+```{r create-ggplot-object, fig.alt="Scatter plot of reign duration through time.", purl=FALSE}
 kings %>%
     ggplot(aes(x = Midyear, y = Reign_duration)) +
     geom_point()
@@ -227,7 +227,7 @@ instance, when inspecting the plot we notice that points only appear at the
 intersection of whole numbers of `Midyear` and `Reign_duration`. 
 
 
-To colour each village in the plot differently, you could use a vector as an input
+To colour each royal house in the plot differently, you could use a vector as an input
 to the argument **`color`**.  However, because we are now mapping features of the
 data to a colour, instead of setting one colour for all points, the colour of the
 points now needs to be set inside a call to the **`aes`** function. When we map
@@ -237,7 +237,7 @@ continue to specify the value of **`alpha`**, **`width`**, and **`height`**
 outside of the **`aes`** function because we are using the same value for
 every point. ggplot2 understands both the Commonwealth English and
 American English spellings for colour, i.e., you can use either `color`
-or `colour`. Here is an example where we color points by the **`village`**
+or `colour`. Here is an example where we color points by the **`House`**
 of the observation:
 
 ```{r color-by-species, purl=FALSE}
@@ -252,7 +252,8 @@ There appears to be an increasing trend in reign duration over time, but is rule
 ## Boxplot
 
 As you will learn, there are multiple ways to plot the a relationship
-between variables. A boxplot can be used to plot a distribution of datapoints withing a group, in our case individual reigns within a royal house.
+between variables. A boxplot can be used to plot a distribution of datapoints within a group, in our case individual reigns within a royal house.
+
 
 ```{r color-by-species-notes, fig.alt="Boxplot by house.", fig.width= 7, purl=FALSE}
 kings %>%
@@ -260,20 +261,28 @@ kings %>%
    geom_boxplot() +
    theme_bw()
 ```
+
 By adding points to a boxplot, we can have a better idea of the number of
 measurements and of their distribution:
+
 ```{r}
 kings %>%
    ggplot(aes(x = House, y = Reign_duration, color = House)) +
-   geom_boxplot() +
+   geom_boxplot(show.legend = FALSE) +
    theme_bw()+
    geom_jitter(alpha = 0.3,
     		color = "black",
     		width = 0.2,
-    		height = 0.2)
+    		height = 0.2)+
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 20))+
+   theme(axis.text.x = element_text(colour = "grey20", size = 12, angle = 45,
+                                     hjust = 0.5, vjust = 0.5)) 
+
 
 ```
 
+
+Or maybe you wish to exclude the houses that only have one data point and simplify the look by avoiding the sloping x axis labels.
 
 ```{r}
 kings %>%
@@ -282,9 +291,9 @@ kings %>%
    theme_bw()+
    labs(x = "",
         y = "Years on the throne")+
-   scale_x_discrete(labels = function(x) str_wrap(x, width = 20))+
-   theme(axis.text.x = element_text(colour = "grey20", size = 12, angle = 45,
-                                     hjust = 0.5, vjust = 0.5)) 
+   theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
 ```
 
 
@@ -308,7 +317,6 @@ This is not a great way to show this type of data because it is difficult to
 distinguish any trend in such a wide spread of dots. What other plot types could help you visualize
 this relationship better?
 
-::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## **`ggplot2`** themes
 
@@ -355,7 +363,7 @@ kings %>%
 
 
 
-### Exercise 1
+### Exercise 3
 
 With all of this information in hand, please take another five minutes to
 either improve one of the plots generated in this exercise or create a
