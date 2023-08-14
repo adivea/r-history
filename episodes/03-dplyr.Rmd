@@ -342,7 +342,7 @@ negates this and says we only want values of `FALSE`, where `Start_year` **is
 not** missing.
 
 
-##@ Exercise 2
+### Exercise 2
 
 Load the `kings` data and create a new dataframe that meets the following
 criteria: contains the `Name` and `House` column and three new columns called
@@ -501,17 +501,14 @@ if (!dir.exists("data_output")) dir.create("data_output")
 write_csv(kings, "data_output/kings_plotting.csv")
 ```
 
-
-:::::::::::::::::::::::::::::::::::::::  challenge
-
 ### Exercise 3
 
 1. How many Danish monarchs enjoyed a longer-than-average reign?
 
 Suggested steps:
 
-*Select the `Names` and `Reign_duration` columns with `select()`
-*`filter()` the kings dataset `Reign_duration` > the-average-length that you calculated before and count the resulting rows with `count()`
+* Select the `Names` and `Reign_duration` columns with `select()`
+* `filter()` the kings dataset `Reign_duration` > the-average-length that you calculated before and count the resulting rows with `count()`
 
 ```{r, solution = TRUE}
 # for the average years of rule
@@ -523,8 +520,8 @@ kings %>%
 
 
 
-*Use `mutate()` to create a new column `AboveAverage` and populate it with TRUE/FALSE which will be a response to the question of whether the `Reign_duration` value is bigger or smaller than average-length
-*Group the unique values in the `AboveAverage` column with `group_by()` and then `count()`. What is your result?
+* Use `mutate()` to create a new column `AboveAverage` and populate it with TRUE/FALSE which will be a response to the question of whether the `Reign_duration` value is bigger or smaller than average-length
+* Group the unique values in the `AboveAverage` column with `group_by()` and then `count()`. What is your result?
 
 
 ```{r, solution = TRUE}

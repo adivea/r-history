@@ -1,16 +1,77 @@
 ---
 title: "Textmining The Arabian Nights"
-output: html_document
-author: Adela Sobotkova & Laura Bang Jensen
-date: "2023-08-24"
+output:
+  unilur::tutorial_html_solution:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    suffix: ""
+    theme: flatly
+    highlight: kate
+    number_sections: no
+    number_subsections: no
 ---
+
+```{r knitr_init, echo=FALSE, cache=FALSE, include=FALSE}
+library(knitr)
+library(unilur)
+
+## Global options
+options(max.print="90")
+opts_chunk$set(echo=TRUE,
+               cache=FALSE, #TRUE
+               prompt=FALSE,
+               tidy=FALSE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=90)
+options(width = 90)
+
+# boxes custom
+#remotes::install_github("koncina/unilur")
+
+knitr::opts_template$set(alert = list(box.title = "Watch out!",
+                                      box.body = list(fill = "#ffe0d9", colour = "black"),
+                                      box.header = list(fill = "#FFAD99", colour = "black"),
+                                      box.collapse = NULL,
+                                      box.icon = "fa-exclamation-triangle"))
+knitr::opts_template$set(solution = list(box.title = "Solution",
+                                         box.body = list(fill = "#e6f6e7", colour = "black"),
+                                         box.header = list(fill = "#ace1af", colour = "black"),
+                                         box.icon = "fa-check-square",
+                                         box.collapse = TRUE))
+knitr::opts_template$set(objectives = list(box.title = "Objectives",
+                                            box.body = list(fill = "#bbe8f4", colour = "black"),
+                                            box.header = list(fill = "#64c9e6", colour = "black"),
+                                            box.icon = "fa-info-circle",
+                                            box.collapse = NULL))
+knitr::opts_template$set(questions = list(box.title = "Questions",
+                                      box.body = list(fill = "#fff9dc", colour = "black"),
+                                      box.header = list(fill = "#ffec8b", colour = "black"),
+                                      box.icon = "fa-search",
+                                      box.collapse = NULL))
+knitr::opts_template$set(information = list(box.title = "Keypoints",
+                                       box.body = list(fill = "#fff9dc", colour = "black"),
+                                      box.header = list(fill = "#ffec8b", colour = "black"),
+                                      box.icon = "fa-search",
+                                      box.collapse = NULL))
+```
+
+
+```{block, opts.label = "objectives" }
+- Load and tokenize a text
+- Create a wordcloud
+- Conduct basic Sentiment analysis
+- Calculate word frequency and term frequency analysis
+- Search for specific words
+- Explore bigrams and trigrams
+```
 
 This script combines code I shared with students in Digital Methods course with that of Laura Jensen used to analyse the corpus of Arabian Nights in her 2022 text-mining project. 
 
 First you will need to install/have the following packages:
 ```{r setup}
-knitr::opts_chunk$set(echo = TRUE)
-
 library(tidyverse)
 library(here)
 library(tidytext)
@@ -80,7 +141,7 @@ an_stop_new %>%
   arrange(-n)
 ```
 
-### Wordcloud
+## Wordcloud
 Let's now make a wordcloud with the most frequent words in Arabian Nights. The first thing we want to do is to filter out any numbers from the text:
 ```{r filter out numbers}
 an_no_numeric <- an_stop_new %>% 
@@ -110,7 +171,7 @@ ggplot(data = an_top100, aes(label = word, size = n)) +
 ```
 I can then see that the most frequent word is "king", but it is worth noting that words like "love" and "wife" also is on the list of the 100 most frequent words in Arabian Nights, and that is words that would be interesting to take a little closer look at.
 
-### Sentiment Analysis
+## Sentiment analysis
 First we'll do a sentiment analysis on Arabian Nights. We focus on the ten main emotions in the "nrc" lexicon, which we have to load first:
 ```{r lexicon}
 get_sentiments(lexicon = "nrc")
@@ -205,7 +266,7 @@ ggplot(data = nrc_positive_sort, aes(x = reorder(word, -n), y = n)) +
 ```
 Here we can see, that the word "king" is much more frequent than any of the other positive words.
 
-### Word frequency by night
+## Word frequency by storynight
 Now we take a look at which stories the words such as love and marriage occur most frequently in. This can help us focus on reading the most relevant tales:
 
 First, we want to split the book up into smaller sections, to get the most precise results, when we look for where in Arabian Nights we can find a high frequency of words.
@@ -268,7 +329,7 @@ tidy_marr %>%
 ```
 Here we can see that night 978, is the night where there is the most frequent use of the word "love". That is the tale of Miriam the Girdle Girl.
 
-### Term frequency analysis (tdf-idf)
+## Term frequency analysis (tdf-idf)
 Looking at the frequency of a single word in different sections of a book is one way to look at word frequency, but such frequency can be skewed by the length and diversity of words used within each section. It is therefore more cautious to look at the number of one specific word in relation to the total number of words in one night. To do that we have to do a term frequency analysis, which is explained here: https://www.tidytextmining.com/tfidf.html
 
 The first step is to once again tokenize the dataframe. This time we tokenize the dataframe, where each night/tale also gets a number assigned to it. We also count all the words, but this time they are split by night number(tale).
@@ -299,7 +360,7 @@ chapter_words %>%
 ```
 In this way we can see that the night, which has the most words being "love" in relation to the total number of words in the night is 856. 
 
-### If a word appears
+## If a word appears
 It would also be interesting to have a look at the word "sex". Does it even appear in Arabian Nights?:
 ```{r sex}
 tidy_stories %>% 
@@ -314,7 +375,7 @@ tidy_stories %>%
 ```
 From this we can see that the word "pomegranate" shows up in the Arabian Nights sixty-eight times in different contexts. The contexts mostly seem non-sexual, but there are definitely some examples of using it as sexual metaphors, eg. row 31, 38, etc..
 
-### Pomegranate Bigrams
+## Pomegranate Bigrams
 
 ```{r}
 an_bigrams <- tidy_stories %>%
@@ -350,7 +411,7 @@ bigrams_united %>%
 ```
 Bigrams and trigrams with frequencies can further be visualized as networks to facilitate assessment of relationships and topic groups. While that is beyond the scope of this script, you can explore network building further in https://www.tidytextmining.com/ngrams
 
-### Session info
+## Session info
 ```{r}
 sessionInfo()
 ```

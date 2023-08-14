@@ -88,7 +88,7 @@ library(tidyverse)
 If not still in the workspace, load the data we saved in the previous lesson.
 
 ```{r load-data, purl=FALSE}
-kings <- read_csv("data_output/kings_plotting.csv")
+kings <- read_csv("data_output/kings_plotting.csv", n_max = 54)
 ```
 
 ## Plotting with **`ggplot2`**
@@ -246,25 +246,45 @@ kings %>%
     geom_point(aes(color = House), width = 0.2, height = 0.2)
 ```
 
-There appears to be a positive trend between number of household
-members and number of items owned (from the list provided). Additionally,
-this trend does not appear to be different by village.
+There appears to be an increasing trend in reign duration over time, but is rule expectancy growing evenly with time or are houses substantially different?
 
-:::::::::::::::::::::::::::::::::::::::::  callout
 
-## Notes
+## Boxplot
 
 As you will learn, there are multiple ways to plot the a relationship
-between variables. Another way to plot data with overlapping points is
-to use the `geom_count` plotting function. The `geom_count()`  function
-makes the size of each point representative of the number of data items
-of that type and the legend gives point sizes associated to particular
-numbers of items.
+between variables. A boxplot can be used to plot a distribution of datapoints withing a group, in our case individual reigns within a royal house.
 
-```{r color-by-species-notes, fig.alt="Previous plot with dots colored by house.", purl=FALSE}
+```{r color-by-species-notes, fig.alt="Boxplot by house.", fig.width= 7, purl=FALSE}
 kings %>%
-   ggplot(aes(x = Midyear, y = Reign_duration, color = House)) +
-   geom_count()
+   ggplot(aes(x = House, y = Reign_duration, color = House)) +
+   geom_boxplot() +
+   theme_bw()
+```
+By adding points to a boxplot, we can have a better idea of the number of
+measurements and of their distribution:
+```{r}
+kings %>%
+   ggplot(aes(x = House, y = Reign_duration, color = House)) +
+   geom_boxplot() +
+   theme_bw()+
+   geom_jitter(alpha = 0.3,
+    		color = "black",
+    		width = 0.2,
+    		height = 0.2)
+
+```
+
+
+```{r}
+kings %>%
+   ggplot(aes(x = House, y = Reign_duration, color = House)) +
+   geom_violin() +
+   theme_bw()+
+   labs(x = "",
+        y = "Years on the throne")+
+   scale_x_discrete(labels = function(x) str_wrap(x, width = 20))+
+   theme(axis.text.x = element_text(colour = "grey20", size = 12, angle = 45,
+                                     hjust = 0.5, vjust = 0.5)) 
 ```
 
 

@@ -59,7 +59,6 @@ knitr::opts_template$set(information = list(box.title = "Keypoints",
                                       box.icon = "fa-search",
                                       box.collapse = NULL))
 
-#source("data/download_data.R")
 ```
 
 ```{block, opts.label = "objectives" }
@@ -91,7 +90,7 @@ The main dataset used in this tutorial is the Danish kongerække digitized by BA
 You can download the dataset [here](https://) or use R to download it in your current folder:
 ```{r, eval=FALSE}
 # download the dataset
-download.file("https://github.com//kings.csv?raw=true", 
+download.file("https://raw.githubusercontent.com/adivea/r-history/main/episodes/data/kings.csv", 
               destfile = "data/kings.csv")
 
 ```
@@ -177,7 +176,7 @@ entries in the dataset into `NA`.
 ```{r, eval=TRUE, message=FALSE, purl=FALSE}
 library(tidyverse)
 
-kings <- read_csv("data/kings.csv", na = c("NULL",""))
+kings <- read_csv("data/kings.csv", na = c("NULL",""), n_max = 54)
 
 ```
 
@@ -536,23 +535,27 @@ Recall that you can use the `typeof()` function to find the type of your atomic 
 kings$Reign_duration
 ```
 
-2. Use the function `mean()` to calculate what is the average reign duration.
-
-3. Use R to figure out which kings enjoyed more than average years of rule.
-
-```{r, solution = TRUE }
-
+```{r, solution = TRUE}
 
 kings$Reign_duration <- kings$End_year-kings$Start_year
 years <- kings$Reign_duration
 years_no_na <- years[!is.na(years)]
 # or
 years_no_na <- na.omit(years)
-# 2.
-median(years, na.rm = TRUE)
-# 3.
-years_above_15 <- years_no_na[years_no_na > 15]
-length(years_above_15)
+```
+
+2. Use the function `mean()` to calculate what is the average reign duration.
+
+```{r, solution = TRUE}
+mean(years, na.rm = TRUE)
+```
+
+
+3. Use R to figure out which kings enjoyed more than average years of rule.
+
+```{r, solution = TRUE }
+years_above_20 <- years_no_na[years_no_na > 20]
+length(years_above_20)
 
 ```
 
