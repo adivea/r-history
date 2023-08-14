@@ -143,7 +143,7 @@ again the kings dataset that we downloaded earlier.
 library(tidyverse)
 
 ## load the data
-kings <- read_csv("data/kings.csv", na = "NULL")
+kings <- read_csv("data/kings.csv", na = "NULL" ,n_max = 54)
 
 ## inspect the data
 kings
@@ -398,7 +398,7 @@ When grouping both by `House` and `Gender`, we see rows in our table for
 monarchs of different gender. 
 
 
-### Practice
+### Exercise 3
 
 
 1. Try summarizing the kings by the average number of years they lived, as an exercise.
@@ -410,7 +410,9 @@ kings %>%
     summarize(mean_years = mean(Years_lived))
 ```
 
-Notice that there are a number of NAs in the result. We can exclude those data from our table using a filter step.
+Notice that there are a number of NAs in the result. 
+
+2. Can you exclude the NA data from our table using a filter step?
 
 
 ```{r, purl=FALSE, solution = TRUE}
@@ -421,13 +423,13 @@ kings %>%
 ```
 
 
-2. Can you round the mean_years so we have only 1 decimal?
+3. Can you round the mean_years so we have only whole numbers?
 
 ```{r, solution = TRUE}
 kings %>%
     filter(!is.na(Years_lived)) %>%
     group_by(House) %>%
-    summarize(mean_years = round(mean(Years_lived),1))
+    summarize(mean_years = round(mean(Years_lived),0))
 ```
 
 
@@ -468,7 +470,7 @@ kings %>%
     arrange(desc(min_rule))
 ```
 
-### Counting
+## Counting
 
 When working with data, we often want to know the number of observations found
 for each factor or combination of factors. For this task, **`dplyr`** provides
@@ -489,19 +491,8 @@ kings %>%
 ```
 
 
-## Saving data 
-Now that you have nicely enriched the kings, we can save this dataframe to our `data_output` directory.
 
-```{r, purl=FALSE, eval=FALSE}
-write_csv(kings, file = "data_output/kings_plotting.csv")
-```
-
-```{r, purl=FALSE, eval=TRUE, echo=FALSE}
-if (!dir.exists("data_output")) dir.create("data_output")
-write_csv(kings, "data_output/kings_plotting.csv")
-```
-
-### Exercise 3
+### Exercise 4
 
 1. How many Danish monarchs enjoyed a longer-than-average reign?
 
@@ -550,6 +541,18 @@ kings %>%
 ```{r, solution = TRUE}
 kings %>%
   filter(str_detect(Name, "Christian*|Fred*"))
+```
+
+## Saving data 
+Now that you have nicely enriched the kings, we can save this dataframe to our `data_output` directory.
+
+```{r, purl=FALSE, eval=FALSE}
+write_csv(kings, file = "data_output/kings_plotting.csv")
+```
+
+```{r, purl=FALSE, eval=TRUE, echo=FALSE}
+if (!dir.exists("data_output")) dir.create("data_output")
+write_csv(kings, "data_output/kings_plotting.csv")
 ```
 
 

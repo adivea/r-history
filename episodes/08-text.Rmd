@@ -1,5 +1,5 @@
 ---
-title: "Textmining The Arabian Nights"
+title: "Exploring the Arabian Nights"
 output:
   unilur::tutorial_html_solution:
     toc: true
@@ -68,7 +68,8 @@ knitr::opts_template$set(information = list(box.title = "Keypoints",
 - Explore bigrams and trigrams
 ```
 
-This script combines code I shared with students in Digital Methods course with that of Laura Jensen used to analyse the corpus of Arabian Nights in her 2022 text-mining project. 
+This script combines code I shared with students in Digital Methods course with that of Laura Bang Jensen who developed it to analyse the Arabian Nights in her 2022 text-mining project. 
+
 
 First you will need to install/have the following packages:
 ```{r setup}
@@ -88,12 +89,12 @@ an_df <- readRDS("data/arabian.rds")
 
 ```
 
-In the dataframe there is a lot of text, that aren't part of the stories that are Arabian Nights. To get the most accurate result we will trim most of the excessive text away by specific rows:
+In the dataframe there is a lot of text, that aren't part of the stories that comprise the Arabian Nights. To get the most accurate result we will trim most of the excessive text away by specific rows:
 ```{r trim dataframe}
 an_df_tidy <- an_df[-c(1:780, 1545:1844, 2268:2437, 3866:4536, 7995:9555, 9846:9913, 11869:12845, 15962:18806, 151902:189676, 148281:150158, 131077:133627, 114421:116373, 97810:99392, 83707:85877, 65031:66536, 48903:51794),]
 ```
 
-Let's figure out the frequency of words in Arabian Nights. The first thing we have to do is to tokenize the dataframe, so that every word gets it's own row in a dataframe:
+Let's figure out the frequency of words in the Arabian Nights. The first thing we have to do is to tokenize the dataframe, so that every word gets it's own row in a dataframe:
 ```{r tokenize dataframe}
 an_tokens <- an_df_tidy %>% 
   unnest_tokens(word, text)
@@ -142,7 +143,7 @@ an_stop_new %>%
 ```
 
 ## Wordcloud
-Let's now make a wordcloud with the most frequent words in Arabian Nights. The first thing we want to do is to filter out any numbers from the text:
+Let's now make a wordcloud with the most frequent words in the Arabian Nights. The first thing we want to do is to filter out any numbers from the text:
 ```{r filter out numbers}
 an_no_numeric <- an_stop_new %>% 
   filter(is.na(as.numeric(word)))
@@ -151,7 +152,7 @@ an_no_numeric <- an_stop_new %>%
 ```{r number of unique words}
 length(unique(an_no_numeric$word))
 ```
-By using this code we can see that there are over 33.000 unique words in Arabian Nights. That is too many to fit into one wordcloud, so we want to limit the number of words in the wordcloud to the most frequent100.
+By using this code we can see that there are over 33.000 unique words in the Arabian Nights. That is too many to fit into one wordcloud, so we want to limit the number of words in the wordcloud to the most frequent100.
 
 To limit the number of words in the wordcloud, do this:
 ```{r limit words used}
@@ -161,7 +162,7 @@ an_top100 <- an_no_numeric %>%
   head(100)
 ```
 
-Now we make a wordcloud based on the new dataframe, we just created, with only the 100 most frequent words in Arabian Nights:
+Now we make a wordcloud based on the new dataframe, we just created, with only the 100 most frequent words in the Arabian Nights:
 ```{r wordcloud}
 ggplot(data = an_top100, aes(label = word, size = n)) +
   geom_text_wordcloud_area(aes(color = n), shape = "diamond") +
@@ -169,10 +170,10 @@ ggplot(data = an_top100, aes(label = word, size = n)) +
   scale_color_gradientn(colors = c("#72286F","darkred","#CF2129")) +
   theme_minimal()
 ```
-I can then see that the most frequent word is "king", but it is worth noting that words like "love" and "wife" also is on the list of the 100 most frequent words in Arabian Nights, and that is words that would be interesting to take a little closer look at.
+I can then see that the most frequent word is "king", but it is worth noting that words like "love" and "wife" also is on the list of the 100 most frequent words in the Arabian Nights, and that is words that would be interesting to take a little closer look at.
 
 ## Sentiment analysis
-First we'll do a sentiment analysis on Arabian Nights. We focus on the ten main emotions in the "nrc" lexicon, which we have to load first:
+First we'll do a sentiment analysis on the Arabian Nights. We focus on the ten main emotions in the "nrc" lexicon, which we have to load first:
 ```{r lexicon}
 get_sentiments(lexicon = "nrc")
 ```
@@ -269,7 +270,7 @@ Here we can see, that the word "king" is much more frequent than any of the othe
 ## Word frequency by storynight
 Now we take a look at which stories the words such as love and marriage occur most frequently in. This can help us focus on reading the most relevant tales:
 
-First, we want to split the book up into smaller sections, to get the most precise results, when we look for where in Arabian Nights we can find a high frequency of words.
+First, we want to split the book up into smaller sections, to get the most precise results, when we look for where in the Arabian Nights we can find a high frequency of words.
 Ideally, we would have split up the book by separate tales, but finding a regex for that is a bit complex, and so we instead split it by separate nights, this way:
 ```{r split book into sections}
 an_df_tidy %>% 
@@ -361,7 +362,8 @@ chapter_words %>%
 In this way we can see that the night, which has the most words being "love" in relation to the total number of words in the night is 856. 
 
 ## If a word appears
-It would also be interesting to have a look at the word "sex". Does it even appear in Arabian Nights?:
+It would also be interesting to have a look at the word "sex". Does it even appear in the Arabian Nights?
+
 ```{r sex}
 tidy_stories %>% 
   filter(str_detect(text, regex("sex", ignore_case = TRUE)))
@@ -377,7 +379,7 @@ From this we can see that the word "pomegranate" shows up in the Arabian Nights 
 
 ## Pomegranate Bigrams
 
-```{r}
+```{r bi-tri-grams}
 an_bigrams <- tidy_stories %>%
   unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
   filter(!is.na(bigram))
@@ -392,7 +394,7 @@ an_trigrams %>%
 As one might expect, a lot of the most common bigrams are pairs of common (uninteresting) words, such as of the and to be: what we call “stop-words”  .
 This is a useful time to use tidyr’s separate(), which splits a column into multiple based on a delimiter. This lets us separate it into two columns, “word1” and “word2”, at which point we can remove cases where either is a stop-word.
 Then we unite the two new columns and filter for target term.
-```{r}
+```{r pomegranate-bigrams}
 bigrams_separated <- an_bigrams %>%
   separate(bigram, c("word1", "word2"), sep = " ")
 
