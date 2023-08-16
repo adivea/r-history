@@ -3,32 +3,78 @@ title: Getting started with R Markdown (Optional)
 teaching: 30
 exercises: 15
 output:
-  html_document:
-    df_print: paged
-source: Rmd
+  unilur::tutorial_html_solution:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    suffix: ""
+    theme: journal
+    highlight: kate
+    number_sections: no
+    number_subsections: no
 ---
 
-```{r setup, include=FALSE}
-source("data/download_data.R")
+```{r knitr_init, echo=FALSE, cache=FALSE, include=FALSE}
+library(knitr)
+library(unilur)
+
+## Global options
+options(max.print="90")
+opts_chunk$set(echo=TRUE,
+               cache=FALSE, #TRUE
+               prompt=FALSE,
+               tidy=FALSE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=90)
+options(width = 90)
+
+# boxes custom
+#remotes::install_github("koncina/unilur")
+
+knitr::opts_template$set(alert = list(box.title = "Watch out!",
+                                      box.body = list(fill = "#ffe0d9", colour = "black"),
+                                      box.header = list(fill = "#FFAD99", colour = "black"),
+                                      box.collapse = NULL,
+                                      box.icon = "fa-exclamation-triangle"))
+knitr::opts_template$set(solution = list(box.title = "Solution",
+                                         box.body = list(fill = "#e6f6e7", colour = "black"),
+                                         box.header = list(fill = "#ace1af", colour = "black"),
+                                         box.icon = "fa-check-square",
+                                         box.collapse = TRUE))
+knitr::opts_template$set(objectives = list(box.title = "Objectives",
+                                            box.body = list(fill = "#bbe8f4", colour = "black"),
+                                            box.header = list(fill = "#64c9e6", colour = "black"),
+                                            box.icon = "fa-info-circle",
+                                            box.collapse = NULL))
+knitr::opts_template$set(questions = list(box.title = "Questions",
+                                      box.body = list(fill = "#fff9dc", colour = "black"),
+                                      box.header = list(fill = "#ffec8b", colour = "black"),
+                                      box.icon = "fa-search",
+                                      box.collapse = NULL))
+knitr::opts_template$set(information = list(box.title = "Keypoints",
+                                       box.body = list(fill = "#fff9dc", colour = "black"),
+                                      box.header = list(fill = "#ffec8b", colour = "black"),
+                                      box.icon = "fa-search",
+                                      box.collapse = NULL))
+
 ```
 
-::::::::::::::::::::::::::::::::::::::: objectives
-
+```{block, opts.label = "objectives" }
 - Create a .Rmd document containing R code, text, and plots
 - Create a YAML header to control output
 - Understand basic syntax of (R)Markdown
 - Customise code chunks to control formatting
 - Use code chunks and in-line code to create dynamic, reproducible documents
+```
 
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-:::::::::::::::::::::::::::::::::::::::: questions
-
+```{block, opts.label = "questions" }
 - What is R Markdown?
 - How can I integrate my R code with text and plots?
 - How can I convert .Rmd files to .html?
+```
 
-::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## R Markdown
 
@@ -242,20 +288,16 @@ name (`{r setup, include = FALSE}`).
 ```{r setup, include = FALSE}
 library(tidyverse)
 library(here)
-kings <- read_csv(here("data/kings.csv"), na = "NULL")
+kings <- read_csv(here("data/kings.csv"), na = "NULL", n_max = 54)
 ```
 ````
-:::::::::::::::::::::::::::::::::::::::::  callout
 
+```{block, opts.label = "alerts" }
 ## Important Note!
 
 The file paths you give in a .Rmd document, e.g. to load a .csv file, are
 relative to the .Rmd document, **not** the project root.
-
-As suggested in the Starting with Data episode, we highly recommend the use of
-the `here()` function to keep the file paths consistent within your project.
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
+```
 
 ## Insert table
 
@@ -281,12 +323,14 @@ Run the code chunk to make sure you get the desired output.
 
 ```{r interview-tbl, message=FALSE, purl=FALSE}
 kings %>%
-    filter(!is.na(memb_assoc)) %>%
-    group_by(village, memb_assoc) %>%
-    summarize(mean_no_membrs = mean(no_membrs)) %>%
+  filter(!is.na(Start_year)) %>% 
+  mutate(Reign_duration = End_year-Start_year) %>% 
+  filter(!is.na(Reign_duration)) %>%
+  group_by(House, Gender) %>%
+  summarize(mean_reign = mean(Reign_duration)) %>%
   knitr::kable(caption = "We can also add a caption.", 
-               col.names = c("Village", "Member Association", 
-                             "Mean Number of Members"))
+               col.names = c("House", "Gender", 
+                             "Mean Years of Rule"))
 ```
 
 Many different R packages can be used to generate tables. Some of the more commonly used options are listed in the table below.
@@ -326,19 +370,16 @@ commas, e.g. `{r chunk-name, eval = FALSE, echo = TRUE}`.
 | `message`       | `TRUE` or `FALSE`    | Whether or not you want your output document to display potential messages produced by your code.         | 
 | `fig.align`       | `default`, `left`, `right`, `center`      | Where the figure from your R code chunk should be output on the page                                      | 
 
-:::::::::::::::::::::::::::::::::::::::::  callout
 
-## Tip
 
+```{block, opts.label = "information" }
 - The default settings for the above chunk options are all `TRUE`.
 - The default settings can be modified per chunk, or with
   `knitr::opts_chunk$set()`,
 - Entering `knitr::opts_chunk$set(echo = FALSE)` will change the default of
   value of `echo` to `FALSE` for **every** code chunk in the document.
+```
 
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-:::::::::::::::::::::::::::::::::::::::  challenge
 
 ## Exercise
 
@@ -348,20 +389,16 @@ table, and re-**Knit** to see what each option does to the output.
 What happens if you use `eval = FALSE` and `echo = FALSE`? What is the
 difference between this and `include = FALSE`?
 
-:::::::::::::::  solution
 
-## Solution to Exercise
-
+```{block, solution = TRUE }
 Create a chunk with `{r eval = FALSE, echo = FALSE}`, then create another
 chunk with `{r include = FALSE}` to compare.
 `eval = FALSE` and `echo = FALSE` will neither run the code in the chunk,
 nor show the code in the knitted document. The code chunk essentially
 doesn't exist in the knitted document as it was never run. Whereas
 `include = FALSE` will run the code and store the output for later use.
+```
 
-:::::::::::::::::::::::::
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## In-line R code
 
@@ -379,29 +416,31 @@ date the document was last knitted).
 
 The best way to use in-line R code, is to minimise the amount of code you need
 to produce the in-line output by preparing the output in code chunks. Let's say
-we're interested in presenting the average household size in a village.
+we're interested in presenting the average reign duration in a royal house.
 
 ```{r in-line-code, purl=FALSE}
-# create a summary data frame with the mean household size by village
-mean_household <- kings %>%
-    group_by(village) %>%
-    summarize(mean_no_membrs = mean(no_membrs))
+# create a summary data frame with the mean reign duration by royal house
+mean_house <- kings %>%
+    filter(!is.na(Start_year)) %>% 
+    mutate(Reign_duration = End_year-Start_year) %>% 
+    group_by(House) %>%
+    summarize(mean_reign = mean(Reign_duration))
 
-# and select the village we want to use
-mean_chirodzo <- mean_household %>%
-  filter(village == "Chirodzo")
+# and select the house we want to use
+mean_Gorm <- mean_house %>%
+  filter(House == "Gorm")
 ```
 
-Now we can make an informative statement on the means of each village, and include
+Now we can make an informative statement on the means of each House, and include
 the mean values as in-line R-code. For example:
 
-The average household size in the village of Chirodzo is
-``` ``r "r round(mean_chirodzo$mean_no_membrs, 2)"`` ```
+The mean reign duration can be
+``` ``r "r round(mean_Gorm$mean_reign, 1)"`` ```
 
 becomes...
 
-The average household size in the village of Chirodzo is
-`r round(mean_chirodzo$mean_no_membrs, 2)`.
+The average reign duration in the House of Gorm is
+`r round(mean_Gorm$mean_reign, 1)`.
 
 Because we are using in-line R code instead of the actual values, we have created
 a dynamic document that will automatically update if we make changes to the dataset
@@ -410,35 +449,16 @@ and/or code chunks.
 ## Plots
 
 Finally, we will also include a plot, so our document is a little more colourful
-and a little less boring. We will use the `interview_plotting` data from the
+and a little less boring. We will use the `kings_plotting` data from the
 previous episode.
 
 If you were unable to complete the previous lesson or did not save the data,
 then you can create it in a new code chunk.
 
-```{r interview-plotting-data, purl=FALSE, eval=TRUE}
-## Not run, but can be used to load in data from previous lesson!
-kings_plotting <- kings %>%
-  ## pivot wider by items_owned
-  separate_rows(items_owned, sep = ";") %>%
-  ## if there were no items listed, changing NA to no_listed_items
-  replace_na(list(items_owned = "no_listed_items")) %>%
-  mutate(items_owned_logical = TRUE) %>%
-  pivot_wider(names_from = items_owned, 
-              values_from = items_owned_logical, 
-              values_fill = list(items_owned_logical = FALSE)) %>%
-  ## pivot wider by months_lack_food
-  separate_rows(months_lack_food, sep = ";") %>%
-  mutate(months_lack_food_logical = TRUE) %>%
-  pivot_wider(names_from = months_lack_food, 
-              values_from = months_lack_food_logical, 
-              values_fill = list(months_lack_food_logical = FALSE)) %>%
-  ## add some summary columns
-  mutate(number_months_lack_food = rowSums(select(., Jan:May))) %>%
-  mutate(number_items = rowSums(select(., bicycle:car)))
+```{r plotting-data, purl=FALSE, eval=TRUE}
+kings_plotting <- read_csv("data_output/kings_plotting.csv", n_max = 54)
 ```
 
-:::::::::::::::::::::::::::::::::::::::  challenge
 
 ## Exercise
 
@@ -449,19 +469,17 @@ one of the colourful plots.
 If you are feeling adventurous, you can also create a new plot with the
 `kings_plotting` data frame.
 
-:::::::::::::::  solution
 
-## Solution to Exercise
-
-```{r my-fancy-plot, answer=TRUE, purl=FALSE}
-kings_plotting %>%
-  ggplot(aes(x = respondent_wall_type)) +
-  geom_bar(aes(fill = village))
+```{r my-fancy-plot, answer=TRUE, purl=FALSE, solution = TRUE}
+kings_plotting %>% 
+  ggplot(aes(x = Midyear, y = Reign_duration)) +
+  geom_point()+    # basic scatterplot
+  geom_smooth()+   # visual trend
+  labs(title = "How long danish kings ruled over time", 
+       x = "Year ", y = "Year they ruled") +   # better title and axes' labels
+  theme_bw() +                                 # cleaner look 
+  theme(text = element_text(size = 14))     
 ```
-
-:::::::::::::::::::::::::
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
 
 We can also create a caption with the chunk option `fig.cap`.
 
@@ -474,12 +492,16 @@ Code for plot
 
 ...or, ideally, something more informative.
 
-```{r caption-plot, eval=TRUE, fig.cap="I made this plot while attending an awesome Data Carpentries workshop where I learned a ton of cool stuff!"}
-kings_plotting %>%
-  ggplot(aes(x = respondent_wall_type)) +
-  geom_bar(aes(fill = village), position = "dodge") + 
-  labs(x = "Type of Wall in Home", y = "Count", fill = "Village Name") +
-  scale_fill_viridis_d() # add colour deficient friendly palette
+```{r caption-plot, eval=TRUE, fig.cap="I made this plot while attending an awesome Data Carpentries workshop where I learned a ton of cool stuff!", echo = FALSE}
+
+kings_plotting %>% 
+  ggplot(aes(x = Midyear, y = Reign_duration)) +
+  geom_point()+    # basic scatterplot
+  geom_smooth()+   # visual trend
+  labs(title = "How long danish kings ruled over time", 
+       x = "Year ", y = "Year they ruled") +   # better title and axes' labels
+  theme_bw() +                                 # cleaner look 
+  theme(text = element_text(size = 14))       
 ```
 
 ## Other output options
@@ -497,9 +519,8 @@ output: word_document
 ---
 ```
 
-:::::::::::::::::::::::::::::::::::::::::  callout
-
-## Note: Creating PDF documents
+```{block, box.title = "Note", box.body = list(fill = "white"), box.icon = "fa-star"}
+## Creating PDF documents
 
 Creating .pdf documents may require installation of some extra software. The R
 package `tinytex` provides some tools to help make this process easier for R users.
@@ -508,12 +529,11 @@ software (you'll only need to do this once) and then when you **Knit** to pdf `t
 will automatically detect and install any additional LaTeX packages that are needed to
 produce the pdf document. Visit the [tinytex website](https://yihui.org/tinytex/)
 for more information.
+```
 
-::::::::::::::::::::::::::::::::::::::::::::::::::
+```{block, box.title = "Note", box.body = list(fill = "white"), box.icon = "fa-star"}
 
-:::::::::::::::::::::::::::::::::::::::::  callout
-
-## Note: Inserting citations into an R Markdown file
+## Inserting citations into an R Markdown file
 
 It is possible to insert citations into an R Markdown file using the
 editor toolbar. The editor toolbar includes commonly seen formatting
@@ -529,8 +549,7 @@ in 'From DOI' and inserting will provide the citation for `ggplot2`
 website](https://rstudio.github.io/visual-markdown-editing/) for more
 information. Tip: obtaining citation information from relevant
 packages can be done by using `citation("package")`.
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
+```
 
 ## Resources
 
@@ -545,11 +564,9 @@ packages can be done by using `citation("package")`.
 - [The Ecosystem of R Markdown](https://www.rstudio.com/resources/webinars/the-ecosystem-of-r-markdown/)
 - [Introducing Bookdown](https://www.rstudio.com/resources/webinars/introducing-bookdown/)
 
-:::::::::::::::::::::::::::::::::::::::: keypoints
-
+```{block, opts.label = "information"}
 - R Markdown is a useful language for creating reproducible documents combining text and executable R-code.
 - Specify chunk options to control formatting of the output document
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
+```
 
 

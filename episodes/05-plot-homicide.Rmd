@@ -1,0 +1,225 @@
+---
+title: "The long-term trend in homicides in Western Europe"
+author: "Adela Sobotkova"
+output:
+  unilur::tutorial_html_solution:
+    toc: false
+    toc_float: false
+    toc_depth: 3
+    suffix: ""
+    theme: journal
+    highlight: kate
+    number_sections: no
+    number_subsections: no
+---
+
+```{r knitr_init, echo=FALSE, cache=FALSE, include=FALSE}
+library(knitr)
+library(unilur)
+
+## Global options
+options(max.print="90")
+opts_chunk$set(echo=TRUE,
+               cache=FALSE, #TRUE
+               prompt=FALSE,
+               tidy=FALSE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=90)
+options(width = 90)
+
+# boxes custom
+#remotes::install_github("koncina/unilur")
+
+knitr::opts_template$set(alert = list(box.title = "Watch out!",
+                                      box.body = list(fill = "#ffe0d9", colour = "black"),
+                                      box.header = list(fill = "#FFAD99", colour = "black"),
+                                      box.collapse = NULL,
+                                      box.icon = "fa-exclamation-triangle"))
+knitr::opts_template$set(solution = list(box.title = "Solution",
+                                         box.body = list(fill = "#e6f6e7", colour = "black"),
+                                         box.header = list(fill = "#ace1af", colour = "black"),
+                                         box.icon = "fa-check-square",
+                                         box.collapse = TRUE))
+knitr::opts_template$set(objectives = list(box.title = "Objectives",
+                                            box.body = list(fill = "#bbe8f4", colour = "black"),
+                                            box.header = list(fill = "#64c9e6", colour = "black"),
+                                            box.icon = "fa-info-circle",
+                                            box.collapse = NULL))
+knitr::opts_template$set(questions = list(box.title = "Questions",
+                                      box.body = list(fill = "#fff9dc", colour = "black"),
+                                      box.header = list(fill = "#ffec8b", colour = "black"),
+                                      box.icon = "fa-search",
+                                      box.collapse = NULL))
+knitr::opts_template$set(information = list(box.title = "Keypoints",
+                                       box.body = list(fill = "#fff9dc", colour = "black"),
+                                      box.header = list(fill = "#ffec8b", colour = "black"),
+                                      box.icon = "fa-search",
+                                      box.collapse = NULL))
+
+```
+
+```{block, opts.label = "objectives" }
+- Produce barplots using ggplot.
+- Set universal plot settings.
+- Describe what faceting is and apply faceting in ggplot.
+- Modify the aesthetics of an existing ggplot plot (including axis labels and colour).
+- Build complex and customized plots from data in a data frame.
+```
+
+Understanding how homicide rates have changed prior to the modern era requires the help of historians and archivists. Manuel Eisner, a criminology professor at the University of Cambridge, and his colleagues published the Historical Violence Database \href{https://cjrc.osu.edu/research/interdisciplinary/hvd}: a compilation of data on long-term trends in homicide rates, in addition to qualitative information such as the cause of death, perpetrator and victim. This database is limited to countries with relatively complete historical records on violence and crime – mainly Western Europe and the US. We will use here a version of their dataset provided by [OurWorldInData project](https://ourworldindata.org/homicides) based at the Oxford University.
+
+Starting in the second half of the nineteenth century, Western European regions have consistent police records of those accused of murder or manslaughter and annual counts of homicide victims. To go back further in time, reaching as far back as the thirteenth century, Eisner collected estimates (from historical records of coroner reports, court trials, and the police) of homicide rates made in over ninety publications by scholars.
+
+Homicide rates – measured as the number of homicides per 100,000 individuals – up to 1990 are sourced from Eisner’s (2003) publication and the Historical Violence Database. 
+
+ 
+```{block, opts.label = "questions" }
+Your task is to assess whether homicide rates in Europe today are lower or higher than in the past? 
+Use the provided dataset to explore, display and describe the long-run homicide rates for the five European regions: Italy, England, Germany, Netherlands and Scandinavia.
+```
+
+### Get the library
+```{r library}
+library(tidyverse)
+```
+
+### Load the data
+
+You should always interrogate the source of your data and ask who compiled it, on the basis of what, what is missing, how representative the data are? You can consult the [OurWorldInData project](https://ourworldindata.org/homicides) as well as Eisner's publications for initial insights.
+
+```{r load-data}
+# download the dataset
+download.file("https://raw.githubusercontent.com/adivea/r-history/main/episodes/data/homicide-rates-across-western-europe.csv", destfile = "data/homicide-rates-across-western-europe.csv")
+
+# load the data into R
+Western_Europe <- read_csv("data/homicide-rates-across-western-europe.csv")
+```
+
+### Inspect the data
+
+How clean and analysis-ready is the dataset? Do you understand what the column names represent? What is hiding under "Entity"? What is the difference between rate and homicide number?
+
+```{r inspect}
+head(Western_Europe)
+```
+
+Ok, the data look good except for the column `Homicide rate in Europe over long-term (per 100,000)` which is very long and not very easy to work with.
+
+
+### Wrangle and visualise the data
+
+- Use the `names()` function and assignment key to relabel this column to `homicides_per_100k` 
+
+```{r }
+# YOUR CODE
+```
+
+```{r relabel-column, solution = TRUE}
+names(Western_Europe)[4] <- "homicides_per_100k"
+```
+
+Now, that you have looked at what the data looks like and what it represents, and streamlined it, let's see what big picture it contains.
+
+### Plot the long-term trend of homicides
+
+- use `ggplot()` function and remember the`+` at the end of the line
+- chose a meaningful `geom_......()`  for geometry (hint: points are not great here)
+- load `Year` on the `x` axis and `homicides_per_100k` column in `y` axis
+- to color individual country entries consistently, assign the country column to the argument `color`.
+- provide meaningful title and axis labels
+- remember to change the `eval` flag so that the code chunk renders when knitted 
+
+```{r , eval = FALSE}
+ggplot(data = Western_Europe) + 
+  #....YOUR CODE GOES HERE
+```
+
+```{r plot-homicides, solution = TRUE}
+ggplot(data = Western_Europe) + 
+  geom_line(mapping = aes(x = Year, 
+                           y = homicides_per_100k,
+            color = Entity)) +
+  labs(x = "Year",
+       y = "Number of Homicides per 100,000 people",
+       title = "Homicide rate in Europe from 1300-2000")
+```
+
+Alright, the homicide rates should all be descending over time. What a comfort. But the viz is not super clear. Let's check the rates for individual countries.
+
+### Uncouple the homicides of individual countries for easier view
+
+You can visualize each country's trend in a separate plot by adding an extra argument to the ggplot, the `facet_wrap()` and feeding it the country column. If in doubt, check your ggplot tutorial and your country column name for exact usage.
+
+- reuse the ggplot from the chunk above
+- insert `facet_wrap()` after the specification of geometry to split countries in separate charts
+- change the facet "layout" to two columns and three rows so that the trends are easier to see in horizontal layout. For this, you need to look up Help for the `facet_wrap()` arguments in R or online.
+
+
+```{r , eval = FALSE}
+ggplot(data = Western_Europe) + 
+  #... YOUR CODE
+```
+
+```{r facetted-homicides, solution = TRUE}
+ggplot(data = Western_Europe) + 
+  geom_line(mapping = aes(x = Year, 
+                           y = homicides_per_100k,
+            color = Entity)) +
+  facet_wrap( ~ Entity, ncol = 2) +
+  labs(x = "Year",
+       y = "Number of Homicides per 100,000 people",
+       title = "Homicide rate in Europe from 1300-2000") 
+
+```
+
+### Finetune the facetted ggplot 
+
+1. In the faceted plot above, move the legend from the current position on the side to below the facets, and label it "Country" instead of "Entity". For the former, explore the `theme()`, and for the latter, try googling. Knowing how to ask a question to zoom down on the problem is a skill that requires practice.
+
+```{r finetune-facet, solution = TRUE}
+ggplot(data = Western_Europe) + 
+  geom_line(mapping = aes(x = Year, 
+                           y = homicides_per_100k,
+            color = Entity)) +
+  facet_wrap( ~ Entity, ncol = 2) +
+  labs(x = "Year",
+       y = "Number of Homicides per 100,000 people",
+       title = "Homicide rate in Europe from 1300-2000",
+       color = "Country") +
+  theme(legend.position = "bottom")
+
+```
+
+### Learn to edit this rmarkdown
+
+For this task, download the rmarkdown script that generated this lesson. Its extension is .Rmd and it is a flexible type of document that allows you to seamlessly combine executable R code, and its output, with text in a single document. It can look neat and be useful for presenting one's research as well as creating assignments for students. If you want to learn more about the format, consult episode 06 among the training guides. Once you have the original script, start in the top section, the `yaml` header and then move down.
+
+  - in the yaml header, change the author of the document to your name
+  - in the yaml header, add a `floating table of contents` by turning two of the arguments to `true`, 
+  - convert the heading of the final task below into heading #2 
+  - provide informative `chunk-names` and edit flags in your R chunks, and
+  - in the yaml header, automatically generate a `timestamp` to show when the document was last updated. (Hint: you will need to add a date to the yaml header, and them google "timestamp in rmarkdown" to figure out the format of the query. Look for answers from stackoverflow.com )
+  
+Ask your instructor to demonstrate these changes live. 
+
+### Are we more civilized today?
+
+Finally, enjoy your accomplishments and ponder the main question behind this data: are we more civilized today?
+
+Compare the trends in homicide with the pattern of reign duration among Danish rulers through time.
+How would you characterize the relationship between the two timeseries?
+
+Well done working with historical crime data!
+
+```{block, opts.label = "information"}
+
+- `ggplot2` is a flexible and useful tool for creating complex and faceted plots in R.
+- The data set and coordinate system can be defined using the `ggplot` function.
+- Additional layers, including geoms, are added using the `+` operator.
+- A number of additional functions such as `labs()` and `theme()` can help you customize and finetune your visualisations
+- Lineplots are useful for visualizing timeseries.
+- Faceting allows you to generate multiple plots based on a categorical variable.
+- `rmarkdown` is a fantastic tool for interactive reports that combine text and code.
+```
