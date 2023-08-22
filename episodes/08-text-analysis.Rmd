@@ -90,8 +90,8 @@ You can download it from [Github](https://github.com/adivea/r-history/blob/main/
 download.file("https://github.com/adivea/r-history/blob/main/episodes/data/arabian.rds", 
               "data/arabian.csv")
 
-an_df <- read_csv("data/arabian.csv")
-
+an_df1 <- read_csv("data/arabian.csv")
+an_df <- readRDS("data/arabian.rds")
 ```
 
 In the dataframe there is a lot of text, that aren't part of the stories that comprise the Arabian Nights. To get the most accurate result we will trim most of the excessive text away by specific rows:
