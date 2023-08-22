@@ -233,7 +233,7 @@ data to a colour, instead of setting one colour for all points, the colour of th
 points now needs to be set inside a call to the **`aes`** function. When we map
 a variable in our data to the colour of the points, **`ggplot2`** will provide a
 different colour corresponding to the different values of the variable. We will
-continue to specify the value of **`alpha`**, **`width`**, and **`height`**
+continue to specify the value of **`alpha`**, which stands for the transparency of a geometry, **`width`**, and **`height`**
 outside of the **`aes`** function because we are using the same value for
 every point. ggplot2 understands both the Commonwealth English and
 American English spellings for colour, i.e., you can use either `color`
@@ -270,7 +270,7 @@ kings %>%
    ggplot(aes(x = House, y = Reign_duration, color = House)) +
    geom_boxplot(show.legend = FALSE) +
    theme_bw()+
-   geom_jitter(alpha = 0.3,
+   geom_jitter(alpha = 0.3,  # set the transparency
     		color = "black",
     		width = 0.2,
     		height = 0.2)+

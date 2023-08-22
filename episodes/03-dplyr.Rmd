@@ -447,7 +447,7 @@ kings %>%
 ```
 
 It is sometimes useful to rearrange the result of a query to inspect the values.
-For instance, we can sort on `min_membrs` to put the group with the shortest reign first:
+For instance, we can sort on `min_rule` to put the group with the shortest reign first:
 
 ```{r, purl=FALSE}
 kings %>%
@@ -526,7 +526,7 @@ kings %>%
 
 2. Sort kings by reign duration in ascending and descending order. Which three ruled the longest/shortest?
 
-3. How many days did the three longest-ruling kings rule?  Use mutate() to create a column called Days calculating the total umber of days they ruled. Consider transition year in your calculation! (366 days)
+3. How many days did the three longest-ruling kings rule?  Use `mutate()` to create a column called `Days` calculating the total number of days they ruled. Consider transition year in your calculation! (366 days)
 
 
 ```{r, solution = TRUE}
