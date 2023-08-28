@@ -85,12 +85,13 @@ library(ggwordcloud)
 
 ## Load the data 
 The text of the Arabian Nights was downloaded from the Gutenberg project using the `gutenbergr` package in script 08b-text-download.R, and then saved as .rds dataset. 
-You can download it from [Github](https://github.com/adivea/r-history/blob/main/episodes/data/arabian.csv). Let's download the dataset and import it into R.
-```{r load-arabian-nights-dataframe}
-download.file("https://github.com/adivea/r-history/blob/main/episodes/data/arabian.rds", 
-              "data/arabian.csv")
+You can download it manually from Github in either [CSV ](https://github.com/adivea/r-history/blob/main/episodes/data/arabian.csv) or [RDS](https://github.com/adivea/r-history/blob/main/episodes/data/arabian.rds) format. Find and click the  download button in the top right corner of the github URL (see figure below).
+!["Download button in Github for the Arabian Nights dataset"](./fig/github-download.png)
 
-an_df1 <- read_csv("data/arabian.csv")
+When the dataset lands in your downloads, move it (without opening) into the data/ folder in your R workspace. Let's then import it into R.
+```{r load-arabian-nights-dataframe}
+# Choose whichever function is relevant for the CSV/RDS dataset and comment out the other
+# an_df <- read_csv("data/arabian.csv")
 an_df <- readRDS("data/arabian.rds")
 ```
 

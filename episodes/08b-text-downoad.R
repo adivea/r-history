@@ -80,7 +80,8 @@ arabian_nights_vol10 <- gutenberg_download(58360)
 ##r create dataframe
 an_df <- do.call("rbind", list(arabian_nights_vol1, arabian_nights_vol2, arabian_nights_vol3, arabian_nights_vol4, arabian_nights_vol5, arabian_nights_vol6, arabian_nights_vol7, arabian_nights_vol8, arabian_nights_vol9, arabian_nights_vol10))
 an_df
-
+class(an_df)
 
 ##r save-load-an
+write_csv(an_df, "data/arabian.csv")
 saveRDS(an_df, "data/arabian.rds")
